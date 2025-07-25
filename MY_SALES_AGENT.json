@@ -1,0 +1,603 @@
+{
+  "name": "MY SALES AGENT",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -400
+      ],
+      "id": "72eae074-7e08-4ed8-aad3-91c8cc5aa238",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a world-class B2B sales strategist and copywriter, known as the \"Content Creation Beast\". Your writing style is empathetic, direct, and focuses on solving problems, not just selling features. You are a master of writing concise, high-impact cold emails that get responses.\n\nYour mission is to analyze a highly detailed LinkedIn profile and generate a hyper-personalized cold email by inferring their likely business challenges.\n\n## Prospect's Live Data\n- **First Name:** {{ $json.emails[0].first_name }}\n- **Last Name:** {{  $json.emails[0].last_name}}\n- **Job Title:** {{ $json.emails[0].position }}\n- **Department:** {{ $json.emails[0].department }}\n- **Company Name:** {{ $json.organization }}\n\n\n## Your Instructions & Rules\n1.  **INFER THE PAIN POINT:** This is your most critical task. From their `Headline` and `Work Experience`, infer ONE specific business pain point they are likely facing. For a \"Head of Growth | Fintech & Health-tech\", this might be \"driving user growth in two very different verticals\" or \"managing customer lifecycle across diverse product lines\". Be specific.\n2.  **SHOW DEEP RESEARCH:** In the email body, subtly mention their current `Company` OR a previous company from their `Work Experience` to prove you have done genuine research. Example: \"I saw your impressive work scaling the team at Wema Bank...\"\n3.  **PERSONALIZE THE OPENING:** Address them directly by their `First Name`.\n4.  **BE CONCISE:** The entire email body MUST be under 75 words. Keep it to 3-4 powerful sentences.\n5.  **CREATE A COMPELLING SUBJECT:** The subject line should be intriguing and personalized. It could be a question related to their inferred pain point or a mention of their company.\n6.  **END WITH A CLEAR CALL TO ACTION:** The email must end with a single, low-friction call to action, like asking for a brief chat.\n\n## Output Format\nYou MUST return your response as a single, valid JSON object. Do not include markdown ```json ``` backticks, explanations, or any other text outside of the JSON structure itself.\n\nThe required JSON structure is:\n{\n  \"subject\": \"A compelling and personalized subject line\",\n  \"body\": \"The concise, 3-4 sentence email body.\"\n}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        780,
+        120
+      ],
+      "id": "abd5711a-886d-4e3f-b624-fe86da134fd1",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        780,
+        380
+      ],
+      "id": "e0c37e1b-de75-4b46-b699-274231a89ff6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "muldXLite6ocPV8W",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "13Vm4GmyCYQQlKl34yE844JO9DKnEmO9p3BllshftPcw",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/13Vm4GmyCYQQlKl34yE844JO9DKnEmO9p3BllshftPcw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "QUALITY": "={{ $('SCORING LEADS').item.json.quality }}",
+            "TIMESTAMP": "={{ $now.toISODate() }}",
+            "FIRSTNAME": "={{$('SCORING LEADS').item.json.emails[0].first_name}}",
+            "LASTNAME": "={{ $('SCORING LEADS').item.json.emails[0].last_name }}",
+            "EMAIL": "={{ $('SCORING LEADS').item.json.emails[0].value }}",
+            "COMPANYNAME": "={{ $('SCORING LEADS').item.json.organization }}",
+            "POSITION": "={{ $('SCORING LEADS').item.json.emails[0].position }}",
+            "DEPARTMENT": "={{ $('SCORING LEADS').item.json.emails[0].department }}",
+            "SCORE": "={{ $('SCORING LEADS').item.json.score }}",
+            "AI_Subject": "={{ $json.subject }}",
+            "AI_Body": "={{ $json.body }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "TIMESTAMP",
+              "displayName": "TIMESTAMP",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "FIRSTNAME",
+              "displayName": "FIRSTNAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "LASTNAME",
+              "displayName": "LASTNAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "EMAIL",
+              "displayName": "EMAIL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "COMPANYNAME",
+              "displayName": "COMPANYNAME",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "POSITION",
+              "displayName": "POSITION",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "DEPARTMENT",
+              "displayName": "DEPARTMENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "SCORE",
+              "displayName": "SCORE",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "QUALITY",
+              "displayName": "QUALITY",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AI_Subject",
+              "displayName": "AI_Subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI_Body",
+              "displayName": "AI_Body",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1440,
+        -340
+      ],
+      "id": "3a3c87db-c337-4517-b7d2-d4cc5c5ce99b",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "FfMGyKkEjtBrdkUd",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.EMAIL }}",
+        "subject": "={{ $json.AI_Subject }}",
+        "emailType": "text",
+        "message": "={{ $json.AI_Body }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        -320
+      ],
+      "id": "5104ec30-e05a-40f8-b0db-b2c46396fd95",
+      "name": "Gmail",
+      "webhookId": "8bba2f3e-b14c-4a7b-8f24-f2cd93c27fa1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "74hhi3GfkUNqqZCm",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "Actor tasks",
+        "operation": "Run task",
+        "actorTaskId": {
+          "__rl": true,
+          "value": "wOlZIFZJe4bn2Agbz",
+          "mode": "id"
+        },
+        "waitForFinish": 60
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        -140,
+        -400
+      ],
+      "id": "b8bf00d2-5599-49f1-8064-168622fc0b7f",
+      "name": "Find Prospect URLs",
+      "credentials": {
+        "apifyApi": {
+          "id": "tyUxmqLoU4C7bXe0",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.quality }}",
+                    "rightValue": "Hot",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "8b2abd8f-8e62-49a7-afb3-5f6142cd2a24"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "HOT"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "088605ae-4360-483e-8f25-cd8eb5761d4e",
+                    "leftValue": "={{ $json.quality }}",
+                    "rightValue": "Warm",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "WARM"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "9305eab4-f9bb-4833-9d5d-d4192a93412f",
+                    "leftValue": "={{ $json.quality }}",
+                    "rightValue": "Cold",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "COLD"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        780,
+        -360
+      ],
+      "id": "b65a1113-e248-4d4b-95d7-1541f128edfa",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the raw text output from the AI (Gemini)\nlet rawText = $input.item.json.text;\n\n// Clean up the text: Remove the markdown ```json and ``` if they exist\nlet cleanText = rawText.replace(/```json\\n/g, '').replace(/```/g, '').trim();\n\n// Parse the clean text into a real JSON object\nreturn JSON.parse(cleanText);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1080,
+        -320
+      ],
+      "id": "7cb31e0f-d861-4665-a956-e65afe823cb2",
+      "name": "Parse AI Output"
+    },
+    {
+      "parameters": {
+        "resource": "Datasets",
+        "operation": "Get items",
+        "datasetId": "={{ $json.defaultDatasetId }}",
+        "offset": {}
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        140,
+        -400
+      ],
+      "id": "d25dff71-09c1-4262-93f9-99319cf41e17",
+      "name": "GET DATASET",
+      "credentials": {
+        "apifyApi": {
+          "id": "tyUxmqLoU4C7bXe0",
+          "name": "Apify account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "domain": "={{ $json.websiteUrl }}",
+        "onlyEmails": false,
+        "limit": 5,
+        "filters": {
+          "department": [
+            "marketing",
+            "sales",
+            "management"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.hunter",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        120
+      ],
+      "id": "0e83cadd-cb9b-4c53-91a1-42a22207a074",
+      "name": "Get Department Contacts (Hunter)",
+      "credentials": {
+        "hunterApi": {
+          "id": "2YW4zaS4IDrw3us1",
+          "name": "Hunter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This is the definitive, \"defensive,\" and error-proof brain for the Scoring Agent.\n// It checks for the existence of every field before trying to use it.\n\nconst prospect = $input.item.json;\nconst companyContext = $(\"Get Department Contacts (Hunter)\").item.json;\n\n// --- Step 1: Initialize Score and Log ---\nlet score = 0;\nconst scoring_log = {};\n\n// --- Step 2: The Multi-Factor Scoring Logic (with Safety Checks) ---\n\n// === Factor 1: Email Quality & Confidence ===\nlet email_score = 0;\n// SAFETY CHECK: Only check for verification.status IF verification exists.\nif (prospect.verification && prospect.verification.status === 'valid') {\n  email_score += 50;\n} else {\n  email_score += 20; // Default score for a found email\n}\n// SAFETY CHECK: Only check confidence IF it exists.\nif (prospect.confidence && prospect.confidence > 95) {\n  email_score += 15;\n}\nscoring_log.email = { score: email_score, notes: `Confidence: ${prospect.confidence || 'N/A'}` };\nscore += email_score;\n\n// === Factor 2: Seniority & Role ===\nlet seniority_score = 0;\n// SAFETY CHECK: Only check title IF it exists.\nconst title = (prospect.position || '').toLowerCase();\nif (title) {\n    if (title.includes('c-level') || title.includes('chief') || title.includes('founder')) { seniority_score += 50; }\n    else if (title.includes('vice president') || title.includes('vp') || title.includes('head')) { seniority_score += 40; }\n    else if (title.includes('manager') || title.includes('director')) { seniority_score += 20; }\n}\nscoring_log.seniority = { score: seniority_score, notes: `Title: ${prospect.position || 'N/A'}` };\nscore += seniority_score;\n\n// === Factor 3: Department Fit ===\nlet department_score = 0;\n// SAFETY CHECK: Only check department IF it exists.\nconst department = (prospect.department || '').toLowerCase();\nif (department) {\n    if (department === 'sales' || department === 'marketing' || department === 'executive' || department === 'growth') {\n      department_score += 20;\n    }\n}\nscoring_log.department = { score: department_score, notes: `Department: ${department || 'N/A'}` };\nscore += department_score;\n\n// === Factor 4: Company Size ===\nlet company_size_score = 0;\n// SAFETY CHECK: Only check employeeCount IF it exists on the context object.\nconst employeeCount = (companyContext && companyContext.employeeCount) ? companyContext.employeeCount : 0;\nif (employeeCount > 1000) { company_size_score += 20; }\nelse if (employeeCount > 200) { company_size_score += 10; }\nscoring_log.company_size = { score: company_size_score, notes: `Employees: ${employeeCount}` };\nscore += company_size_score;\n\n// --- Step 3: Tag the Lead Quality ---\nlet prospect_quality = 'Cold';\nif (score >= 95) { prospect_quality = 'Hot'; }\nelse if (score >= 65) { prospect_quality = 'Warm'; }\n\n// --- Step 4: Finalize the Output ---\nprospect.score = score;\nprospect.quality = prospect_quality;\nprospect.scoring_log = scoring_log;\nprospect.final_email = prospect.value;\nprospect.companyName = (companyContext && companyContext.companyName) ? companyContext.companyName : 'the company';\n\nreturn prospect;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        420,
+        -380
+      ],
+      "id": "6f3d653c-5ea5-4c53-ad64-be5339249a17",
+      "name": "SCORING LEADS"
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        420,
+        40
+      ],
+      "id": "c9dfd454-9b53-47f1-ab9a-755a10ce0b6c",
+      "name": "Process Each Contact"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Find Prospect URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Parse AI Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Prospect URLs": {
+      "main": [
+        [
+          {
+            "node": "GET DATASET",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse AI Output": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET DATASET": {
+      "main": [
+        [
+          {
+            "node": "Get Department Contacts (Hunter)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Department Contacts (Hunter)": {
+      "main": [
+        [
+          {
+            "node": "Process Each Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SCORING LEADS": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Each Contact": {
+      "main": [
+        [
+          {
+            "node": "SCORING LEADS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Process Each Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a54b5d69-24d6-4ff0-b114-854bf34cf55e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "01ff9519183080c8ca11e2f53a26a9bb8d6db974040ea61b5433dbf5d783bedf"
+  },
+  "id": "09PTq1zEMOueW2qx",
+  "tags": []
+}
