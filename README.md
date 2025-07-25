@@ -10,7 +10,7 @@ Watch the 90-Second Live Demo on YouTube
 🏛️ The Architecture: A Multi-Agent System
 This engine is not a single workflow; it's a modular, multi-agent pipeline. Each agent is a specialist with a dedicated role, ensuring the system is scalable, debuggable, and resilient.
 (This is where you will upload and embed the Architecture Diagram you created in Excalidraw.)
-![alt text](https://github.com/Gabbydunkk/Autonomous-AI-Sales-Engine-n8n/blob/main/ARCHITECT.png)
+![alt text](https://github.com/Gabbydunkk/Autonomous-AI-Sales-Engine-n8n/blob/main/Untitled-2025-07-25-0412.png)
 
 The Agents:
 Agent 1: The Company Hunter (Apify): The process begins by scraping LinkedIn for companies that are actively hiring for key roles, providing a powerful "buying signal."
